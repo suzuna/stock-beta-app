@@ -2,7 +2,7 @@
 
 ## 開発環境のつくりかた
 
-事前にローカルPCにdockerを入れておく
+事前にローカルPCにDockerを入れておく（Windowsの場合はDocker DesktopではなくWSL2に直接Dockerを入れる）
 
 ### Setup
 
@@ -17,7 +17,10 @@ docker image build -t stock-beta-app-docker-image:latest .
 コンテナを起動するたびに行う
 
 ```bash
-docker container run --name stock-beta-app-docker-container --rm -it --mount type=bind,src="$(pwd)"/terraform,target=/workdir stock-beta-app-docker-image:latest
+docker container run --name stock-beta-app-docker-container --rm -it \
+  --mount type=bind,src="$(pwd)"/terraform,target=/workdir \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  stock-beta-app-docker-image:latest
 gcloud auth login
 gcloud auth application-default login
 gcloud auth application-default set-quota-project <project_id>
