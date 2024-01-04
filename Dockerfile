@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM python:3.11.7-bookworm
 
 RUN apt update -y && \
     apt upgrade -y && \
@@ -31,4 +31,9 @@ RUN apt update -y && apt install -y terraform=1.6.6-*
 RUN apt install -y unzip
 RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
+# pip install
+RUN pip install --upgrade pip
+
 WORKDIR /workdir
+
+CMD ["/bin/bash"]
