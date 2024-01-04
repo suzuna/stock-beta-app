@@ -1,0 +1,16 @@
+.env
+
+__pycache__/
+.ipynb_checkpoints/
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+
+terraform/src/*
