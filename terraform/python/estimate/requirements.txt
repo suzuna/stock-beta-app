@@ -1,0 +1,8 @@
+agraffe
+fastapi
+google-cloud-logging
+numpy
+pandas-datareader
+polars
+pyarrow
+scipy
