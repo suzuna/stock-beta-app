@@ -6,7 +6,6 @@ import numpy as np
 import pandas_datareader.data as pdr
 import polars as pl
 import scipy as sp
-from agraffe import Agraffe, Service
 from fastapi import FastAPI
 
 from kalman_filter import filtering, smoothing, reverse_loglik
@@ -18,10 +17,9 @@ logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
 app = FastAPI()
-entry_point = Agraffe.entry_point(app, Service.google_cloud_functions)
 
 MARKET_CODE_STOOQ = "^NKX"
-START_DATE = "2001-01-01"
+START_DATE = "2018-01-01"
 THRESHOLD_DATA_LEN = 50
 
 def validate_stock_code(x: str) -> bool:
