@@ -1,5 +1,5 @@
 fastapi
-google-cloud-logging
+loguru
 numpy
 pandas-datareader
 polars

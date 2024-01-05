@@ -13,6 +13,7 @@ from loguru import logger
 
 ENDPOINT_URL = os.environ["ENDPOINT_URL"]
 
+st.set_page_config(layout="centered", page_title="Time-Varing Beta Chart")
 st.title("Time-Varing Beta Chart")
 st.write("時変ベータ値（対日経平均）をカルマンフィルタによって推定してプロットします")
 
@@ -81,12 +82,14 @@ try:
             title="time-varing beta (filtered); center: estimated (mean), upper and lower: 95%CI"
         )
         p1.update_xaxes(tickformat="%Y/%m/%d")
+        p1.update_layout(showlegend=False)
 
         p2 = px.line(
             beta_smoothing, x="date", y="beta", color="type",
             title="time-varing beta (smoothed); center: estimated (mean), upper and lower: 95%CI"
         )
         p2.update_xaxes(tickformat="%Y/%m/%d")
+        p2.update_layout(showlegend=False)
 
         p3 = px.line(
             stock_close, x="date", y="close_stock",
@@ -95,7 +98,7 @@ try:
         p3.update_xaxes(tickformat="%Y/%m/%d")
 
         st.write(
-            f'Time-Varing Beta (as of {data["filtering"]["date"][-1]}): {round(data["filtering"]["estimated"][-1], 3)} (95% CI: {round(data["filtering"]["lower"][-1], 3)} - {round(data["filtering"]["upper"][-1], 3)})'
+            f'[as of {data["filtering"]["date"][-1]}] {round(data["filtering"]["estimated"][-1], 3)} (95% CI: {round(data["filtering"]["lower"][-1], 3)} - {round(data["filtering"]["upper"][-1], 3)})'
         )
         st.plotly_chart(p1)
         st.plotly_chart(p2)

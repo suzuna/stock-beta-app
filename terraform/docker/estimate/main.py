@@ -1,20 +1,14 @@
 import re
-from logging import DEBUG, getLogger
 
-import google.cloud.logging
 import numpy as np
 import pandas_datareader.data as pdr
 import polars as pl
 import scipy as sp
 from fastapi import FastAPI
+from loguru import logger
 
 from kalman_filter import filtering, smoothing, reverse_loglik
 
-
-logging_client = google.cloud.logging.Client()
-logging_client.setup_logging()
-logger = getLogger(__name__)
-logger.setLevel(DEBUG)
 
 app = FastAPI()
 
@@ -27,6 +21,7 @@ def validate_stock_code(x: str) -> bool:
 
 @app.get("/")
 def main(stock_code: str):
+    logger.info(f"input: {stock_code}")
     stock_code_stooq = f"{stock_code}.JP"
     try:
         if not validate_stock_code(stock_code):
@@ -51,7 +46,7 @@ def main(stock_code: str):
             )
             .slice(offset=1)
         )
-        market = pdr.DataReader(MARKET_CODE_STOOQ, data_source="stooq", start=START_DATE, end="2023-12-28")
+        market = pdr.DataReader(MARKET_CODE_STOOQ, data_source="stooq", start=START_DATE)
         df_market = pl.from_pandas(market.reset_index())
         df_market = (
             df_market
@@ -144,7 +139,6 @@ def main(stock_code: str):
         )
 
         res = {
-            "date": [i.strftime("%Y-%m-%d") for i in beta_est.get_column("date").to_list()],
             "filtering": {
                 "date": [i.strftime("%Y-%m-%d") for i in beta_est.get_column("date").to_list()],
                 "estimated": beta_est.get_column("estimated").to_list(),

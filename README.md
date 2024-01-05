@@ -26,7 +26,8 @@ docker container run --name stock-beta-app-docker-container --rm -it \
   -p 8080:8080 \
   -p 8000:8000 \
   stock-beta-app-docker-image:latest
-# 一度やっていれば多分OK
+
+# 以下は初回+認証が切れたときに行う
 gcloud auth login
 gcloud auth application-default login
 gcloud auth application-default set-quota-project <project_id>
@@ -41,7 +42,6 @@ gcloud auth configure-docker asia-northeast1-docker.pkg.dev
 
 ```bash
 bucket = "<terraformのstateを置くGCSのバケット名>"
-prefix = "<terraformのstateを置くディレクトリ名>"
 ```
 
 ```bash

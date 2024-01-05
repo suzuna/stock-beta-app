@@ -26,7 +26,7 @@ data "google_iam_policy" "noauth" {
 
 resource "google_service_account" "interservices" {
   account_id   = "cloud-run-interservice-id"
-  description  = "Identity used by a Cloud Run 'streamlit' (public) to call Cloud RUn 'estimate' (private)."
+  description  = "Identity used by a Cloud Run 'streamlit' (public) to call Cloud Run 'estimate' (private)."
   display_name = "cloud-run-interservice-id"
 }
 
