@@ -9,7 +9,10 @@ resource "google_cloud_run_v2_service" "estimate" {
       max_instance_count = 1
     }
     containers {
-      image = "asia.gcr.io/${var.project_id}/estimate"
+      image = "asia-northeast1-docker.pkg.dev/${var.project_id}/myrepo/estimate:latest"
+      ports {
+        container_port = 8080
+      }
       resources {
         limits = {
           cpu    = "1"
