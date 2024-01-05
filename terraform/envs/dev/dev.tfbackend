@@ -1,2 +1,1 @@
 bucket = "dev-stock-beta-app-terraform-state-bucket"
-prefix = "dev-state"
