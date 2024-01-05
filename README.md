@@ -21,13 +21,16 @@ docker image build -t stock-beta-app-docker-image:latest .
 # FastAPIは8080, Streamlitは8000ポートを使う
 docker container run --name stock-beta-app-docker-container --rm -it \
   --mount type=bind,src="$(pwd)"/terraform,target=/workdir \
+  -v ~/.config/gcloud:/root/.config/gcloud \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -p 8080:8080 \
   -p 8000:8000 \
   stock-beta-app-docker-image:latest
+# 一度やっていれば多分OK
 gcloud auth login
 gcloud auth application-default login
 gcloud auth application-default set-quota-project <project_id>
+gcloud auth configure-docker asia-northeast1-docker.pkg.dev
 ```
 
 ## Terraformでのdeploy
@@ -66,6 +69,12 @@ tflint --init
   - Cloud Functions（第2世代）の裏側でCloud Runを使っているから
 - CloudBuild API
 
+Artifact Registryにリポジトリを作る
+
+```bash
+gcloud artifacts repositories create myrepo --location=asia-northeast1 --repository-format=docker --project=<project_id>
+```
+
 ### デプロイ（毎回の手順）
 
 ```bash
@@ -76,16 +85,17 @@ terraform plan -var-file=envs/(env_name)/(env_name).tfvars
 terraform apply -var-file=envs/(env_name)/(env_name).tfvars
 ```
 
+Cloud Runのコンテナ内のコードを変更した場合は以下も行う
+
 ```bash
-# container registryの場合
+# Container Registryの場合 -> Container Registryは使わないように変更した
 docker image build -t asia.gcr.io/<project_id>/estimate:latest ./terraform/docker/estimate
 docker push asia.gcr.io/<project_id>/estimate:latest
 
 # Artifact Registryの場合
-# 次の1行は最初だけ
-gcloud artifacts repositories create myrepo --location=asia-northeast1 --repository-format=docker --project=<project_id>
-gcloud auth configure-docker asia-northeast1-docker.pkg.dev
-
 docker image build -t asia-northeast1-docker.pkg.dev/<project_id>/myrepo/estimate:latest ./docker/estimate
 docker push asia-northeast1-docker.pkg.dev/<project_id>/myrepo/estimate:latest
+
+docker image build -t asia-northeast1-docker.pkg.dev/<project_id>/myrepo/streamlit:latest ./docker/streamlit
+docker push asia-northeast1-docker.pkg.dev/<project_id>/myrepo/streamlit:latest
 ```

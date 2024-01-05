@@ -28,7 +28,7 @@ resource "google_cloud_run_v2_service" "estimate" {
   }
 }
 
-resource "google_cloud_run_v2_service_iam_policy" "noauth" {
+resource "google_cloud_run_v2_service_iam_policy" "noauth_estimate" {
   location = google_cloud_run_v2_service.estimate.location
   project  = google_cloud_run_v2_service.estimate.project
   name     = google_cloud_run_v2_service.estimate.name
