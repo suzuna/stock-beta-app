@@ -2,7 +2,7 @@
 
 ## 開発環境のつくりかた
 
-事前にローカルPCにdockerを入れておく
+事前にローカルPCにDockerを入れておく（Windowsの場合はDocker DesktopではなくWSL2に直接Dockerを入れる）
 
 ### Setup
 
@@ -17,8 +17,15 @@ docker image build -t stock-beta-app-docker-image:latest .
 コンテナを起動するたびに行う
 
 ```bash
-docker container run --name stock-beta-app-docker-container --rm -it --mount type=bind,src="$(pwd)"/terraform,target=/workdir stock-beta-app-docker-image:latest
-
+# DooDを使うためにボリュームマウントする
+# FastAPIは8080, Streamlitは8000ポートを使う
+docker container run --name stock-beta-app-docker-container --rm -it \
+  --mount type=bind,src="$(pwd)"/terraform,target=/workdir \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -p 8080:8080 \
+  -p 8000:8000 \
+  stock-beta-app-docker-image:latest
+gcloud auth login
 gcloud auth application-default login
 gcloud auth application-default set-quota-project <project_id>
 ```
@@ -67,4 +74,18 @@ terraform fmt
 tflint
 terraform plan -var-file=envs/(env_name)/(env_name).tfvars
 terraform apply -var-file=envs/(env_name)/(env_name).tfvars
+```
+
+```bash
+# container registryの場合
+docker image build -t asia.gcr.io/<project_id>/estimate:latest ./terraform/docker/estimate
+docker push asia.gcr.io/<project_id>/estimate:latest
+
+# Artifact Registryの場合
+# 次の1行は最初だけ
+gcloud artifacts repositories create myrepo --location=asia-northeast1 --repository-format=docker --project=<project_id>
+gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+
+docker image build -t asia-northeast1-docker.pkg.dev/<project_id>/myrepo/estimate:latest ./docker/estimate
+docker push asia-northeast1-docker.pkg.dev/<project_id>/myrepo/estimate:latest
 ```

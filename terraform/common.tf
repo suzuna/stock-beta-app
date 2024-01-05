@@ -9,12 +9,17 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.10.0"
     }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.4.1"
-    }
   }
   backend "gcs" {
     # see: terraform/envs/(env_name)/(env_name).tfbackend
+  }
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers"
+    ]
   }
 }
