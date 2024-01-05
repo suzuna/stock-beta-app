@@ -23,3 +23,18 @@ data "google_iam_policy" "noauth" {
     ]
   }
 }
+
+resource "google_service_account" "interservices" {
+  account_id   = "cloud-run-interservice-id"
+  description  = "Identity used by a Cloud Run 'streamlit' (public) to call Cloud RUn 'estimate' (private)."
+  display_name = "cloud-run-interservice-id"
+}
+
+data "google_iam_policy" "private" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "serviceAccount:${google_service_account.interservices.email}",
+    ]
+  }
+}
