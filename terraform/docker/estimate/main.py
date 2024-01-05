@@ -30,14 +30,14 @@ def main(stock_code: str):
     stock_code_stooq = f"{stock_code}.JP"
     try:
         if not validate_stock_code(stock_code):
-            return {"Message": "Not valid stock code"}
+            return {"message": "Not valid stock code"}
 
         # 株価の取得
         stock_code_stooq = f"{stock_code}.JP"
         stock = pdr.DataReader(stock_code_stooq, data_source="stooq", start=START_DATE)
         # 正しく推定できないため。存在しないstock_codeの場合は0行なのでここに含まれる
         if stock.shape[0] <= THRESHOLD_DATA_LEN:
-            return {"Message": f"Can not be estimated time-varing beta, because of either length of stock price data <= {THRESHOLD_DATA_LEN} or not existing stock code"}
+            return {"message": f"Can not be estimated time-varing beta, because of either length of stock price data <= {THRESHOLD_DATA_LEN} or not existing stock code"}
 
         df_stock = pl.from_pandas(stock.reset_index())
         df_stock = (
@@ -76,7 +76,7 @@ def main(stock_code: str):
             )
         )
         if df.shape[0] <= THRESHOLD_DATA_LEN:
-            return {"Message": f"Can not be estimated time-varing beta, because of either length of stock price data <= {THRESHOLD_DATA_LEN} or not existing stock code"}
+            return {"message": f"Can not be estimated time-varing beta, because of either length of stock price data <= {THRESHOLD_DATA_LEN} or not existing stock code"}
 
         ret_market = df.get_column("ret_market").to_numpy()
         ret_stock = df.get_column("ret_stock").to_numpy()
@@ -146,20 +146,27 @@ def main(stock_code: str):
         res = {
             "date": [i.strftime("%Y-%m-%d") for i in beta_est.get_column("date").to_list()],
             "filtering": {
+                "date": [i.strftime("%Y-%m-%d") for i in beta_est.get_column("date").to_list()],
                 "estimated": beta_est.get_column("estimated").to_list(),
                 "std_error": beta_est.get_column("std_error").to_list(),
-                "lower_95": beta_est.get_column("lower").to_list(),
-                "upper_95": beta_est.get_column("upper").to_list(),
+                "lower": beta_est.get_column("lower").to_list(),
+                "upper": beta_est.get_column("upper").to_list(),
             },
             "smoothing": {
+                "date": [i.strftime("%Y-%m-%d") for i in beta_smooth.get_column("date").to_list()],
                 "estimated": beta_smooth.get_column("estimated").to_list(),
                 "std_error": beta_smooth.get_column("std_error").to_list(),
-                "lower_95": beta_smooth.get_column("lower").to_list(),
-                "upper_95": beta_smooth.get_column("upper").to_list(),
+                "lower": beta_smooth.get_column("lower").to_list(),
+                "upper": beta_smooth.get_column("upper").to_list(),
+            },
+            "close": {
+                "date": [i.strftime("%Y-%m-%d") for i in df.get_column("date").to_list()],
+                "close_stock": df.get_column("close_stock").to_list(),
+                "close_market": df.get_column("close_market").to_list(),
             }
         }
         return res
 
     except Exception as e:
         logger.exception(e)
-        return {"Message": "error occurred"}
+        return {"message": "error occurred"}

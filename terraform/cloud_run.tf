@@ -1,7 +1,7 @@
 resource "google_cloud_run_v2_service" "estimate" {
   name     = "${var.env}-estimate"
   location = var.project_region
-  ingress  = "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
     scaling {
@@ -16,7 +16,7 @@ resource "google_cloud_run_v2_service" "estimate" {
       resources {
         limits = {
           cpu    = "1"
-          memory = "1024Mi"
+          memory = "512Mi"
         }
       }
     }
