@@ -4,6 +4,7 @@ resource "google_cloud_run_v2_service" "estimate" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
+    max_instance_request_concurrency = 5
     scaling {
       min_instance_count = 0
       max_instance_count = 1
