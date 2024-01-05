@@ -13,7 +13,7 @@ resource "google_cloud_run_v2_service" "streamlit" {
       image = "asia-northeast1-docker.pkg.dev/${var.project_id}/myrepo/streamlit:latest"
       env {
         name  = "ENDPOINT_URL"
-        value = var.endpoint_url
+        value = google_cloud_run_v2_service.estimate.uri
       }
       ports {
         container_port = 8000
