@@ -1,3 +1,5 @@
+google-auth
+google-auth-oauthlib
 loguru
 plotly-express
 polars

@@ -29,10 +29,10 @@ resource "google_cloud_run_v2_service" "estimate" {
   }
 }
 
-resource "google_cloud_run_v2_service_iam_policy" "noauth_estimate" {
+resource "google_cloud_run_v2_service_iam_policy" "private" {
   location = google_cloud_run_v2_service.estimate.location
   project  = google_cloud_run_v2_service.estimate.project
   name     = google_cloud_run_v2_service.estimate.name
 
-  policy_data = data.google_iam_policy.noauth.policy_data
+  policy_data = data.google_iam_policy.private.policy_data
 }

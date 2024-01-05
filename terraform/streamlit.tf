@@ -25,6 +25,7 @@ resource "google_cloud_run_v2_service" "streamlit" {
         }
       }
     }
+    service_account = google_service_account.interservices.email
   }
   lifecycle {
     ignore_changes = [

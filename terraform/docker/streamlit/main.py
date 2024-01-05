@@ -2,6 +2,8 @@ import json
 import os
 import re
 
+import google.auth.transport.requests
+import google.oauth2.id_token
 import plotly.express as px
 import polars as pl
 import streamlit as st
@@ -19,9 +21,16 @@ button = st.button("実行")
 
 st.markdown("---")
 
+@st.cache_data(show_spinner=False, ttl=600)
+def authorize(audience: str) -> dict[str, str]:
+    auth_req = google.auth.transport.requests.Request()
+    id_token = google.oauth2.id_token.fetch_id_token(auth_req, audience)
+    headers = {"Authorization": f"Bearer {id_token}"}
+    return headers
+
 @st.cache_data(show_spinner="in progress (please wait about 30 seconds) ...", ttl=600)
-def fetch(url: str, params: dict[str, str]) -> dict:
-    resp = requests.get(url, params=params)
+def fetch(url: str, params: dict[str, str], headers: dict[str, str]) -> dict:
+    resp = requests.get(url, params=params, headers=headers)
     data = json.loads(resp.text)
     return data
 
@@ -33,7 +42,8 @@ try:
             st.error("有効な銘柄コードを入力してください")
             st.stop()
 
-        data = fetch(ENDPOINT_URL, params={"stock_code": stock_code})
+        headers = authorize(ENDPOINT_URL)
+        data = fetch(ENDPOINT_URL, params={"stock_code": stock_code}, headers=headers)
         if "message" in data:
             st.error("入力した銘柄コードの銘柄が存在しないか、または存在する株価データが少ないためベータ値を推定できませんでした")
             st.stop()
