@@ -1,5 +1,9 @@
 # stock-beta-app
 
+## 構成図
+
+![architecture](./architecture.drawio.svg)
+
 ## 開発環境のつくりかた
 
 事前にローカルPCにDockerを入れておく（Windowsの場合はDocker DesktopではなくWSL2に直接Dockerを入れる）
